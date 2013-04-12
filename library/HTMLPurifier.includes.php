@@ -207,6 +207,7 @@ require 'HTMLPurifier/URIFilter/DisableExternal.php';
 require 'HTMLPurifier/URIFilter/DisableExternalResources.php';
 require 'HTMLPurifier/URIFilter/DisableResources.php';
 require 'HTMLPurifier/URIFilter/HostBlacklist.php';
+require 'HTMLPurifier/URIFilter/HostWhitelist.php';
 require 'HTMLPurifier/URIFilter/MakeAbsolute.php';
 require 'HTMLPurifier/URIFilter/Munge.php';
 require 'HTMLPurifier/URIFilter/SafeIframe.php';

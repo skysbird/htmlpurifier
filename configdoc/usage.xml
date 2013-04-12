@@ -529,6 +529,11 @@
    <line>12</line>
   </file>
  </directive>
+ <directive id="URI.HostWhitelist">
+  <file name="HTMLPurifier/URIFilter/HostWhitelist.php">
+   <line>12</line>
+  </file>
+ </directive>
  <directive id="URI.MungeResources">
   <file name="HTMLPurifier/URIFilter/Munge.php">
    <line>14</line>

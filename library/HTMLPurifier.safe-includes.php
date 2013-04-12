@@ -201,6 +201,7 @@ require_once $__dir . '/HTMLPurifier/URIFilter/DisableExternal.php';
 require_once $__dir . '/HTMLPurifier/URIFilter/DisableExternalResources.php';
 require_once $__dir . '/HTMLPurifier/URIFilter/DisableResources.php';
 require_once $__dir . '/HTMLPurifier/URIFilter/HostBlacklist.php';
+require_once $__dir . '/HTMLPurifier/URIFilter/HostWhitelist.php';
 require_once $__dir . '/HTMLPurifier/URIFilter/MakeAbsolute.php';
 require_once $__dir . '/HTMLPurifier/URIFilter/Munge.php';
 require_once $__dir . '/HTMLPurifier/URIFilter/SafeIframe.php';
