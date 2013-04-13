@@ -38,6 +38,7 @@ class HTMLPurifier_Strategy_ValidateAttributes extends HTMLPurifier_Strategy
             $tokens[$key] = $token; // for PHP 4
         }
         $context->destroy('CurrentToken');
+        $context->destroy('ParentToken');
 
         return $tokens;
     }

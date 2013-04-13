@@ -52,8 +52,9 @@ class HTMLPurifierTest extends HTMLPurifier_Harness
 
     function test_hostwhitelist(){
         $this->config->set('URI.HostWhitelist',array('www.taobao.com','img01.daily.taobaocdn.net'));
-        $this->config->set('AutoFormat.HostWhitelist', true);
-        $this->assertPurification('<img src="foo.jpg" />', '<img alt="foo.jpg" />');
+        $uri = $this->config->getDefinition('URI');
+        $uri->addFilter(new HTMLPurifier_URIFilter_HostWhitelist(),$this->config);
+        $this->assertPurification('<img src="foo.jpg" />', '');
 
         $this->assertPurification('<img src="http://www.taobao.com/foo.jpg" />', '<img src="http://www.taobao.com/foo.jpg" alt="foo.jpg" />');
 
@@ -65,58 +66,50 @@ class HTMLPurifierTest extends HTMLPurifier_Harness
 
     function test_flashhostwhitelist(){
         $this->config->set('HTML.SafeEmbed', true);
-        $this->config->set('HTML.SafeObject', true);
         $this->config->set('Output.FlashCompat', true);
         $this->config->set('HTML.FlashAllowFullScreen', true);//允许全屏
         $this->config->set('URI.FlashHostWhitelist',array('www.taobao.com','img01.daily.taobaocdn.net'));
-        $this->config->set('AutoFormat.FlashHostWhitelist', true);
+        $this->config->set('Filter.Custom',array(new HTMLPurifier_Filter_FlashObject()));
+        $this->config->set('Cache.DefinitionImpl',NULL);
+        $hm = $this->config->getHTMLDefinition(true);
+        $hm->manager->addModule(new HTMLPurifier_HTMLModule_SafeFlashObject());
+        //$this->config->set('AutoFormat.FlashHostWhitelist', true);
+
+        $uri = $this->config->getDefinition('URI');
+        $uri->addFilter(new HTMLPurifier_URIFilter_FlashHostWhitelist(),$this->config);
 
         $content = "<object><param name='video' value='http://www.a.com' /></object>";
 
-        $this->assertPurification($content, '<object type="application/x-shockwave-flash"><param name="allowScriptAccess" value="never" /><param name="allowNetworking" value="internal" /></object>');
+        $this->assertPurification($content, '<object type="application/x-shockwave-flash"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="internal" /><param name="allowScriptAccess" value="never" /><param name="" value="" /></object>');
 
         $content = "<object><param name='movie' value='http://www.taobao.com/a.swf' /></object>";
 
-        $this->assertPurification($content, '<object data="http://www.taobao.com/a.swf" type="application/x-shockwave-flash"><param name="allowScriptAccess" value="never" /><param name="allowNetworking" value="internal" /><param name="movie" value="http://www.taobao.com/a.swf" /></object>');
+        $this->assertPurification($content, '<object type="application/x-shockwave-flash"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="internal" /><param name="allowScriptAccess" value="never" /><param name="movie" value="http://www.taobao.com/a.swf" /></object>');
 
         //param name wrong
         $content = "<object><param name='video' value='http://www.taobao.com/a.swf' /></object>";
-
-        $this->assertpurification($content, '<object type="application/x-shockwave-flash"><param name="allowScriptAccess" value="never" /><param name="allowNetworking" value="internal" /></object>');
+        $this->assertpurification($content, '<object type="application/x-shockwave-flash"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="internal" /><param name="allowScriptAccess" value="never" /><param name="" value="" /></object>');
 
         $content = "<object data='http://www.a.com/a.swf'><param name='movie' value='http://www.taobao.com/a.swf' /></object>";
 
-        $this->assertPurification($content, '<object data="http://www.taobao.com/a.swf" type="application/x-shockwave-flash"><param name="allowScriptAccess" value="never" /><param name="allowNetworking" value="internal" /><param name="movie" value="http://www.taobao.com/a.swf" /></object>');
+        $this->assertPurification($content, '<object type="application/x-shockwave-flash"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="internal" /><param name="allowScriptAccess" value="never" /><param name="movie" value="http://www.taobao.com/a.swf" /></object>');
 
         $content = "<object data='http://www.taobao.com/a.swf'><param name='movie' value='http://www.b.com/a.swf' /></object>";
 
-        $this->assertPurification($content, '<object data="http://www.taobao.com/a.swf" type="application/x-shockwave-flash"><param name="allowScriptAccess" value="never" /><param name="allowNetworking" value="internal" /><param name="movie" value="" /></object>');
-
+        $this->assertPurification($content, '<object data="http://www.taobao.com/a.swf" type="application/x-shockwave-flash"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="internal" /><param name="allowScriptAccess" value="never" /><param name="movie" value="" /></object>');
+        
         $content = "<object data='http://www.taobao.com/a.swf'></object>";
-
-        $this->assertPurification($content, '<object data="http://www.taobao.com/a.swf" type="application/x-shockwave-flash"><param name="allowScriptAccess" value="never" /><param name="allowNetworking" value="internal" /></object>');
+        
+        $this->assertPurification($content, '<object data="http://www.taobao.com/a.swf" type="application/x-shockwave-flash"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="internal" /><param name="allowScriptAccess" value="never" /></object>');
 
     }
 
 
     function test_performace(){
         ini_set('memory_limit', '128M');
-/*        $this->config->set('Core.Encoding', 'gbk'); // replace with your encoding
         $this->config->set('HTML.Doctype', 'XHTML 1.0 Transitional'); // replace with your
         $this->config->set('HTML.SafeEmbed', true);
-        $this->config->set('HTML.SafeObject', true);
-        //$this->config->set('HTML.XHTML', true);
-        //$this->config->set('Filter.YouTube', true);
-        $this->config->set('Output.FlashCompat', true);
-        $this->config->set('HTML.FlashAllowFullScreen', true);//允许全屏
-        $this->config->set('HTML.Allowed', 'object[data],div[style|id|class],img[src|alt|title],h0,h2[id],h3,h4,b,strong,i,em,u,a[href|title|id],ul,ol,li,p[style],br,span[style]');
-        $this->config->set('URI.HostWhitelist',array('www.taobao.com','img01.daily.taobaocdn.net'));
-        $this->config->set('URI.FlashHostWhitelist',array('www.b.com','www.a.com'));
-        $this->config->set('URI.HostBlacklist',array('www.williamlong.info'));*/
-        $this->config->set('URI.HostBlacklist',array('www.williamlong.info'));
-        $this->config->set('HTML.Doctype', 'XHTML 1.0 Transitional'); // replace with your
-        $this->config->set('HTML.SafeEmbed', true);
-        $this->config->set('HTML.SafeObject', true);
+        //$this->config->set('HTML.SafeObject', true);
         $this->config->set('Output.FlashCompat', true);
         $this->config->set('HTML.FlashAllowFullScreen', true);//允许全屏
         $this->config->set('HTML.Allowed', 'object[data],param[name|value],a[href|title|id],div[style|id|class],img[src|alt|title],h2[id],h3,h4,b,strong,i,em,u,ul,ol,li,p[style],br,span[style]');
@@ -125,13 +118,12 @@ class HTMLPurifierTest extends HTMLPurifier_Harness
         $this->config->set('URI.FlashHostWhitelist',array('www.b.com','www.a.com','www.x.com'));
         $this->config->set('Filter.Custom',array(new HTMLPurifier_Filter_FlashObject()));
         $uri = $this->config->getDefinition('URI');
-//        $uri->addFilter(new HTMLPurifier_Filter_HostWhitelist(),$config);
         $uri->addFilter(new HTMLPurifier_URIFilter_HostWhitelist(),$this->config);
         $uri->addFilter(new HTMLPurifier_URIFilter_FlashHostWhitelist(),$this->config);
 
-        //$this->config->set('AutoFormat.HostWhitelist', true);
-        //$this->config->set('AutoFormat.Custom',array('SafeObject'));
-        //$this->config->set('AutoFormat.FlashHostWhitelist', true);
+        $hm = $this->config->getHTMLDefinition(true);
+        $hm->manager->addModule(new HTMLPurifier_HTMLModule_SafeFlashObject());
+
         $content = file_get_contents("3086.html");
         $t1 = microtime(true);
         //$content = "<div><div><a href='xxx'>fff</a></div></div><object data='http://www.x.com/a.swf'><param name='movie' value='http://www.aa.com' /><param name='allowFullScreen    ' value='false'></param></object><object data='http://www.xx.com/a.swf'><param name='movie' value='http://www.a.com' /></param></object>";

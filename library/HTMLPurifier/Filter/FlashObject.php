@@ -8,21 +8,22 @@ class HTMLPurifier_Filter_FlashObject extends HTMLPurifier_Filter
     protected $allowFullScreen_regex = '#<param name="allowFullScreen"[^>]+/>#s'; 
     protected $allowScriptAccess_regex = '#<param name="allowScriptAccess"[^>]+/>#s'; 
     protected $allowNetworking_regex = '#<param name="allowNetworking"[^>]+/>#s'; 
- 
-    public function preFilter($html, $config, $context) {
+
+    protected $config;
+    /*public function preFilter($html, $config, $context) {
        // $html = "xxx";
         return $html;
-    }
+    }*/
 
     public function postFilter($html, $config, $context) {
-        $post_regex = '#<object[^>]+>.+?</object>#s';
+        $this->config = $config;
+        $post_regex = '#<object[^>]+>.*?</object>#s';
         return preg_replace_callback($post_regex, array($this, 'objectCb'),$html);
     }
 
     
     protected function objectCb($matches){
-        //print_r($matches);
-        $obj_regex = '#(<object[^>]+>)(.+?)(</object>)#s';
+        $obj_regex = '#(<object[^>]+>)(.*?)(</object>)#s';
         $obj_html = $matches[0];
 
         //check allowScriptAccess
@@ -65,8 +66,14 @@ class HTMLPurifier_Filter_FlashObject extends HTMLPurifier_Filter
 
 
     protected function addFullScreen($matches){
-        $to_add = '<param name="allowFullScreen" value="never" />';
-        return $matches[1].$to_add.$matches[2].$matches[3];
+        $allow = $this->config->get('HTML.FlashAllowFullScreen');
+        if($allow){
+            $to_add = '<param name="allowFullScreen" value="true" />';
+            return $matches[1].$to_add.$matches[2].$matches[3];
+        }
+        else {
+            return $matches[0];
+        }
 
     }
 
@@ -74,7 +81,13 @@ class HTMLPurifier_Filter_FlashObject extends HTMLPurifier_Filter
         $ret = preg_match($this->allowFullScreen_regex,$matches[0]);
         $html = $matches[0];
         if($ret){
-            $html = '<param name="allowFullScreen" value="true" />';
+            $allow = $this->config->get('HTML.FlashAllowFullScreen');
+            if($allow){
+                $html = '<param name="allowFullScreen" value="true" />';
+            }
+            else{
+                $html = '';
+            }
         }
 
         $ret = preg_match($this->allowScriptAccess_regex,$matches[0]);

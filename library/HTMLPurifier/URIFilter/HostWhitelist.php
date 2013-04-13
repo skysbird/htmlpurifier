@@ -15,7 +15,6 @@ class HTMLPurifier_URIFilter_HostWhitelist extends HTMLPurifier_URIFilter
     public function filter(&$uri, $config, $context) {
         $token = $context->get('CurrentToken', true);
         $parent_token = $context->get('ParentToken',true);
-//        print_r($parent_token);
         if($token){
             if(!in_array($token->name,array('embed','object'))) {
                 if($token->name=='param' && $parent_token->name=='object'){

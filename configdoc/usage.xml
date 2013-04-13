@@ -400,6 +400,10 @@
   <file name="HTMLPurifier/AttrTransform/SafeParam.php">
    <line>38</line>
   </file>
+  <file name="HTMLPurifier/Filter/FlashObject.php">
+   <line>69</line>
+   <line>84</line>
+  </file>
  </directive>
  <directive id="Core.EscapeInvalidChildren">
   <file name="HTMLPurifier/ChildDef/Required.php">
@@ -446,6 +450,9 @@
   </file>
   <file name="HTMLPurifier/HTMLModule/SafeEmbed.php">
    <line>13</line>
+  </file>
+  <file name="HTMLPurifier/HTMLModule/SafeFlashObject.php">
+   <line>19</line>
   </file>
   <file name="HTMLPurifier/HTMLModule/SafeObject.php">
    <line>19</line>
@@ -522,6 +529,11 @@
  <directive id="Core.HiddenElements">
   <file name="HTMLPurifier/Strategy/RemoveForeignElements.php">
    <line>29</line>
+  </file>
+ </directive>
+ <directive id="URI.FlashHostWhitelist">
+  <file name="HTMLPurifier/URIFilter/FlashHostWhitelist.php">
+   <line>12</line>
   </file>
  </directive>
  <directive id="URI.HostBlacklist">

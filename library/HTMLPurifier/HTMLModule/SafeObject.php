@@ -44,7 +44,7 @@ class HTMLPurifier_HTMLModule_SafeObject extends HTMLPurifier_HTMLModule
         );
           $param->attr_transform_post[] = new HTMLPurifier_AttrTransform_SafeParam();
           //disable this injector, because all injector are so slow
-          //$this->info_injector[] = 'SafeObject';
+          $this->info_injector[] = 'SafeObject';
 
     }
 
