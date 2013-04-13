@@ -373,13 +373,13 @@ class HTMLPurifier_Strategy_MakeWellFormed extends HTMLPurifier_Strategy
             if ($current_parent->name == $token->name) {
                 $token->start = $current_parent;
                 foreach ($this->injectors as $i => $injector) {
-                    /*if (isset($token->skip[$i])) continue;
+                    if (isset($token->skip[$i])) continue;
                     if ($token->rewind !== null && $token->rewind !== $i) continue;
                     $injector->handleEnd($token);
                     $this->processToken($token, $i);
                     $this->stack[] = $current_parent;
                     $reprocess = true;
-                    break;*/
+                    break;
                 }
                 continue;
             }
