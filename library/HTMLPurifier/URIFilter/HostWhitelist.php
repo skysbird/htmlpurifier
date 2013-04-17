@@ -21,7 +21,7 @@ class HTMLPurifier_URIFilter_HostWhitelist extends HTMLPurifier_URIFilter
                     return true;
                 }
                 foreach($this->whitelist as $whitelisted_host_fragment) {
-                    if ($uri->host == $whitelisted_host_fragment ) {
+                    if (fnmatch($whitelisted_host_fragment,$uri->host)) {
                         return true;
                     }
                 }

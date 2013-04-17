@@ -68,7 +68,7 @@ class HTMLPurifierTest extends HTMLPurifier_Harness
         $this->config->set('HTML.SafeEmbed', true);
         $this->config->set('Output.FlashCompat', true);
         $this->config->set('HTML.FlashAllowFullScreen', true);//允许全屏
-        $this->config->set('URI.FlashHostWhitelist',array('www.taobao.com','img01.daily.taobaocdn.net'));
+        $this->config->set('URI.FlashHostWhitelist',array('*.taobao.com','*.daily.taobaocdn.net'));
         $this->config->set('Filter.Custom',array(new HTMLPurifier_Filter_FlashObject()));
         $this->config->set('Cache.DefinitionImpl',NULL);
         $hm = $this->config->getHTMLDefinition(true);
@@ -115,7 +115,7 @@ class HTMLPurifierTest extends HTMLPurifier_Harness
         $this->config->set('HTML.FlashAllowFullScreen', true);//允许全屏
         $this->config->set('HTML.Allowed', 'object[data],param[name|value],a[href|title|id],div[style|id|class],img[src|alt|title],h2[id],h3,h4,b,strong,i,em,u,ul,ol,li,p[style],br,span[style]');
         $this->config->set('Cache.DefinitionImpl',NULL);
-        $this->config->set('URI.HostWhitelist',array('www.taobao.com','img01.daily.taobaocdn.net'));
+        $this->config->set('URI.HostWhitelist',array('*.taobao.com','*.daily.taobaocdn.net'));
         $this->config->set('URI.FlashHostWhitelist',array('www.b.com','www.a.com','www.x.com'));
 
         /* use the custom FlashObject Filter to instead of the SafeObject Inector */
@@ -133,6 +133,7 @@ class HTMLPurifierTest extends HTMLPurifier_Harness
         $content = file_get_contents("3086.html");
         $t1 = microtime(true);
         //$content = "<div><div><a href='xxx'>fff</a></div></div><object data='http://www.x.com/a.swf'><param name='movie' value='http://www.aa.com' /><param name='allowFullScreen    ' value='false'></param></object><object data='http://www.xx.com/a.swf'><param name='movie' value='http://www.a.com' /></param></object>";
+        //$content = "<a href='http://www.taobao.com'>fff</a>";
         //$content = "<object data='http://www.a.com/a.swf'></object>";
         $after = $this->purifier->purify($content,$this->config);
         $t2 = microtime(true);

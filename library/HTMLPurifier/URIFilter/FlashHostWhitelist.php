@@ -20,7 +20,7 @@ class HTMLPurifier_URIFilter_FlashHostWhitelist extends HTMLPurifier_URIFilter
         if($token){
             if(in_array($token->name,array('embed','object')) || ($token->name=='param' && $parent_token->name=='object')){
                 foreach($this->whitelist as $whitelisted_host_fragment) {
-                    if ($uri->host == $whitelisted_host_fragment ) {
+                    if (fnmatch($whitelisted_host_fragment,$uri->host)) {
                         return true;
                     }
                 }
