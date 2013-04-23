@@ -111,12 +111,13 @@ class HTMLPurifierTest extends HTMLPurifier_Harness
         $this->config->set('HTML.SafeEmbed', true);
         /*not recommend to use this Module, because it will enable the SafeObject Inector Module, and the Inector Module is uneffiency */
         //$this->config->set('HTML.SafeObject', true);
-        $this->config->set('Output.FlashCompat', true);
+        //$this->config->set('Output.FlashCompat', true);
         $this->config->set('HTML.FlashAllowFullScreen', true);//允许全屏
-        $this->config->set('HTML.Allowed', 'object[data],param[name|value],a[href|title|id],div[style|id|class],img[src|alt|title],h2[id],h3,h4,b,strong,i,em,u,ul,ol,li,p[style],br,span[style]');
+        $this->config->set('HTML.Allowed', 'object[data],param[name|value],embed[src|type|allowscriptaccess|width|height],a[href|title|id],div[style|id|class],img[src|alt|title],h2[id],h3,h4,b,strong,i,em,u,ul,ol,li,p[style],br,span[style]');
         $this->config->set('Cache.DefinitionImpl',NULL);
         $this->config->set('URI.HostWhitelist',array('*.taobao.com','*.daily.taobaocdn.net'));
-        $this->config->set('URI.FlashHostWhitelist',array('www.b.com','www.a.com','www.x.com'));
+        $this->config->set('URI.FlashHostWhitelist',array('www.b.com','www.a.com','www.x.com','*.ku6.com'));
+//        $this->config->set('Filter.YouTube', true);
 
         /* use the custom FlashObject Filter to instead of the SafeObject Inector */
         $this->config->set('Filter.Custom',array(new HTMLPurifier_Filter_FlashObject()));
@@ -125,7 +126,6 @@ class HTMLPurifierTest extends HTMLPurifier_Harness
         $uri = $this->config->getDefinition('URI');
         $uri->addFilter(new HTMLPurifier_URIFilter_HostWhitelist(),$this->config);
         $uri->addFilter(new HTMLPurifier_URIFilter_FlashHostWhitelist(),$this->config);
-
         /* use the custom safeflash object module to ingore the inector module */
         $hm = $this->config->getHTMLDefinition(true);
         $hm->manager->addModule(new HTMLPurifier_HTMLModule_SafeFlashObject());
@@ -135,14 +135,53 @@ class HTMLPurifierTest extends HTMLPurifier_Harness
         //$content = "<div><div><a href='xxx'>fff</a></div></div><object data='http://www.x.com/a.swf'><param name='movie' value='http://www.aa.com' /><param name='allowFullScreen    ' value='false'></param></object><object data='http://www.xx.com/a.swf'><param name='movie' value='http://www.a.com' /></param></object>";
         //$content = "<a href='http://www.taobao.com'>fff</a>";
         //$content = "<object data='http://www.a.com/a.swf'></object>";
+        //$content = '<embed height="400" width="480" allowscriptaccess="never" pluginspage="http://get.adobe.com/cn/flashplayer/" flashvars="playMovie=true&amp;amp;auto=1" allowfullscreen="true" quality="high" type="application/x-shockwave-flash" wmode="transparent" style="display:inline-block" src="http://player.ku6.com/refer/TsxxCy_rk4Kt_xVZ/v.swf">';
         $after = $this->purifier->purify($content,$this->config);
         $t2 = microtime(true);
-        echo (($t2-$t1)*1000).'ms';
+        echo (($t2-$t1)*1000)."ms\n";
         //echo $after;
 
 
     }
 
+    function test_injector_performace(){
+//        ini_set('memory_limit', '128M');
+        $this->config->set('HTML.Doctype', 'XHTML 1.0 Transitional'); // replace with your
+        $this->config->set('HTML.SafeEmbed', true);
+        /*not recommend to use this Module, because it will enable the SafeObject Inector Module, and the Inector Module is uneffiency */
+        $this->config->set('HTML.SafeObject', true);
+        //$this->config->set('Output.FlashCompat', true);
+        $this->config->set('HTML.FlashAllowFullScreen', true);//允许全屏
+        $this->config->set('HTML.Allowed', 'object[data],param[name|value],embed[src|type|allowscriptaccess|width|height],a[href|title|id],div[style|id|class],img[src|alt|title],h2[id],h3,h4,b,strong,i,em,u,ul,ol,li,p[style],br,span[style]');
+        $this->config->set('Cache.DefinitionImpl',NULL);
+        $this->config->set('URI.HostWhitelist',array('*.taobao.com','*.daily.taobaocdn.net'));
+        $this->config->set('URI.FlashHostWhitelist',array('www.b.com','www.a.com','www.x.com','*.ku6.com'));
+//        $this->config->set('Filter.YouTube', true);
+
+        /* use the custom FlashObject Filter to instead of the SafeObject Inector */
+        //$this->config->set('Filter.Custom',array(new HTMLPurifier_Filter_FlashObject()));
+
+        /* use custom Whitelist URIFilter to Filter the unsafe URL */
+        $uri = $this->config->getDefinition('URI');
+        $uri->addFilter(new HTMLPurifier_URIFilter_HostWhitelist(),$this->config);
+        $uri->addFilter(new HTMLPurifier_URIFilter_FlashHostWhitelist(),$this->config);
+        /* use the custom safeflash object module to ingore the inector module */
+        //$hm = $this->config->getHTMLDefinition(true);
+        //$hm->manager->addModule(new HTMLPurifier_HTMLModule_SafeFlashObject());
+
+        $content = file_get_contents("3086.html");
+        $t1 = microtime(true);
+        //$content = "<div><div><a href='xxx'>fff</a></div></div><object data='http://www.x.com/a.swf'><param name='movie' value='http://www.aa.com' /><param name='allowFullScreen    ' value='false'></param></object><object data='http://www.xx.com/a.swf'><param name='movie' value='http://www.a.com' /></param></object>";
+        //$content = "<a href='http://www.taobao.com'>fff</a>";
+        //$content = "<object data='http://www.a.com/a.swf'><param name='flashvars' value='xxx'/></object>";
+        //$content = '<embed height="400" width="480" allowscriptaccess="never" pluginspage="http://get.adobe.com/cn/flashplayer/" flashvars="playMovie=true&amp;amp;auto=1" allowfullscreen="true" quality="high" type="application/x-shockwave-flash" wmode="transparent" style="display:inline-block" src="http://player.ku6.com/refer/TsxxCy_rk4Kt_xVZ/v.swf">';
+        $after = $this->purifier->purify($content,$this->config);
+        $t2 = microtime(true);
+        echo (($t2-$t1)*1000)."ms\n";
+        //echo $after;
+
+
+    }
 
 }
 
