@@ -86,12 +86,22 @@
  <directive id="Test.ForceNoIconv">
   <file name="HTMLPurifier/Encoder.php">
    <line>341</line>
-   <line>379</line>
+   <line>384</line>
   </file>
  </directive>
  <directive id="Core.EscapeNonASCIICharacters">
   <file name="HTMLPurifier/Encoder.php">
    <line>373</line>
+  </file>
+ </directive>
+ <directive id="Core.EscapeSpecialCharacters">
+  <file name="HTMLPurifier/Encoder.php">
+   <line>377</line>
+  </file>
+ </directive>
+ <directive id="Core.SpecialCharacters">
+  <file name="HTMLPurifier/Encoder.php">
+   <line>409</line>
   </file>
  </directive>
  <directive id="Output.CommentScriptContents">

@@ -144,6 +144,18 @@ class HTMLPurifierTest extends HTMLPurifier_Harness
 
     }
 
+    function test_special_chars(){
+        $this->config->set('Core.Encoding', 'gbk');
+        $this->config->set('Core.EscapeSpecialCharacters',true);
+        $this->config->set('HTML.Doctype', 'XHTML 1.0 Transitional'); 
+        $this->config->set('Core.SpecialCharacters',array(8226));
+        $content = "&#8226;";
+        $after = $this->purifier->purify($content,$this->config);
+        
+        $this->assertEqual($content,$after);
+	
+    }
+
     function test_injector_performace(){
 //        ini_set('memory_limit', '128M');
         $this->config->set('HTML.Doctype', 'XHTML 1.0 Transitional'); // replace with your
@@ -182,6 +194,7 @@ class HTMLPurifierTest extends HTMLPurifier_Harness
 
 
     }
+
 
 }
 

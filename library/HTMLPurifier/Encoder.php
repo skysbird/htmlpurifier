@@ -373,6 +373,11 @@ class HTMLPurifier_Encoder
         if ($escape = $config->get('Core.EscapeNonASCIICharacters')) {
             $str = self::convertToASCIIDumbLossless($str);
         }
+
+        if ($escape = $config->get('Core.EscapeSpecialCharacters')) {
+            $str = self::convertSpecialCharsLossless($str,$config);
+        }
+
         if ($encoding === 'utf-8') return $str;
         static $iconv = null;
         if ($iconv === null) $iconv = self::iconvAvailable();
@@ -399,6 +404,46 @@ class HTMLPurifier_Encoder
         // than forcibly turn on %Core.EscapeNonASCIICharacters
     }
 
+    public static function convertSpecialCharsLossless($str,$config) {
+
+        $special_chars = $config->get('Core.SpecialCharacters');
+
+        $bytesleft = 0;
+        $result = '';
+        $working = 0;
+        $len = strlen($str);
+        for( $i = 0; $i < $len; $i++ ) {
+            $bytevalue = ord($str[$i]) ;
+            if( $bytevalue <= 0x7F ) { //0xxx xxxx
+                $result .= chr( $bytevalue );
+                $bytesleft = 0;
+            } elseif( $bytevalue <= 0xBF ) { //10xx xxxx
+                $working = $working << 6;
+                $working += ($bytevalue & 0x3F);
+                $bytesleft--;
+                if(in_array($working,$special_chars)){
+                        if( $bytesleft <= 0 ) {
+                            $result .= "&#" . $working . ";";
+                        }
+                } else {
+                    if( $bytesleft <=0){
+                        $result .= self::unichr($working);
+                    }
+                }
+            } elseif( $bytevalue <= 0xDF ) { //110x xxxx
+                $working = $bytevalue & 0x1F;
+                $bytesleft = 1;
+            } elseif( $bytevalue <= 0xEF ) { //1110 xxxx
+                $working = $bytevalue & 0x0F;
+                $bytesleft = 2;
+            } else { //1111 0xxx
+                $working = $bytevalue & 0x07;
+                $bytesleft = 3;
+            }
+        }
+
+        return $result;
+    }
     /**
      * Lossless (character-wise) conversion of HTML to ASCII
      * @param $str UTF-8 string to be converted to ASCII
