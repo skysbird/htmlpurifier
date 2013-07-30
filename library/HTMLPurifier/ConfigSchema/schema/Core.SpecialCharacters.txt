@@ -1,0 +1,7 @@
+Core.SpecialCharacters
+TYPE: list
+VERSION: 1.3.0
+DEFAULT: array()
+--DESCRIPTION--
+List of strings( in unicode ) which need to convert to html entity
+# vim: et sw=4 sts=4

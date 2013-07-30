@@ -104,12 +104,11 @@ class HTMLPurifierTest extends HTMLPurifier_Harness
 
     }
 
-
-    function test_performace(){
-//        ini_set('memory_limit', '128M');
+    function test_linkify(){
         $this->config->set('HTML.Doctype', 'XHTML 1.0 Transitional'); // replace with your
         $this->config->set('HTML.SafeEmbed', true);
         /*not recommend to use this Module, because it will enable the SafeObject Inector Module, and the Inector Module is uneffiency */
+        //$this->config->set('AutoFormat.Linkify',true);
         //$this->config->set('HTML.SafeObject', true);
         //$this->config->set('Output.FlashCompat', true);
         $this->config->set('HTML.FlashAllowFullScreen', true);//允许全屏
@@ -120,7 +119,7 @@ class HTMLPurifierTest extends HTMLPurifier_Harness
 //        $this->config->set('Filter.YouTube', true);
 
         /* use the custom FlashObject Filter to instead of the SafeObject Inector */
-        $this->config->set('Filter.Custom',array(new HTMLPurifier_Filter_FlashObject()));
+        $this->config->set('Filter.Custom',array(new HTMLPurifier_Filter_Linkify(),new HTMLPurifier_Filter_FlashObject()));
 
         /* use custom Whitelist URIFilter to Filter the unsafe URL */
         $uri = $this->config->getDefinition('URI');
@@ -129,6 +128,43 @@ class HTMLPurifierTest extends HTMLPurifier_Harness
         /* use the custom safeflash object module to ingore the inector module */
         $hm = $this->config->getHTMLDefinition(true);
         $hm->manager->addModule(new HTMLPurifier_HTMLModule_SafeFlashObject());
+
+
+        $content = "<a><span>http://www.taobao2.com</span></a>";
+
+        $after = $this->purifier->purify($content,$this->config);
+
+        print_r($after);
+        
+ 
+    }
+
+    function test_performace(){
+//        ini_set('memory_limit', '128M');
+        $this->config->set('HTML.Doctype', 'XHTML 1.0 Transitional'); // replace with your
+        $this->config->set('HTML.SafeEmbed', true);
+        /*not recommend to use this Module, because it will enable the SafeObject Inector Module, and the Inector Module is uneffiency */
+        //$this->config->set('AutoFormat.Linkify',true);
+        //$this->config->set('HTML.SafeObject', true);
+        //$this->config->set('Output.FlashCompat', true);
+        $this->config->set('HTML.FlashAllowFullScreen', true);//允许全屏
+        $this->config->set('HTML.Allowed', 'object[data],param[name|value],embed[src|type|allowscriptaccess|width|height],a[href|title|id],div[style|id|class],img[src|alt|title],h2[id],h3,h4,b,strong,i,em,u,ul,ol,li,p[style],br,span[style]');
+        $this->config->set('Cache.DefinitionImpl',NULL);
+        $this->config->set('URI.HostWhitelist',array('*.taobao.com','*.daily.taobaocdn.net'));
+        $this->config->set('URI.FlashHostWhitelist',array('www.b.com','www.a.com','www.x.com','*.ku6.com'));
+//        $this->config->set('Filter.YouTube', true);
+
+        /* use the custom FlashObject Filter to instead of the SafeObject Inector */
+        $this->config->set('Filter.Custom',array(new HTMLPurifier_Filter_FlashObject(),new HTMLPurifier_Filter_Linkify()));
+
+        /* use custom Whitelist URIFilter to Filter the unsafe URL */
+        $uri = $this->config->getDefinition('URI');
+        $uri->addFilter(new HTMLPurifier_URIFilter_HostWhitelist(),$this->config);
+        $uri->addFilter(new HTMLPurifier_URIFilter_FlashHostWhitelist(),$this->config);
+        /* use the custom safeflash object module to ingore the inector module */
+        $hm = $this->config->getHTMLDefinition(true);
+        $hm->manager->addModule(new HTMLPurifier_HTMLModule_SafeFlashObject());
+
 
         $content = file_get_contents("3086.html");
         $t1 = microtime(true);
