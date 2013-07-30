@@ -119,6 +119,7 @@ class HTMLPurifierTest extends HTMLPurifier_Harness
 //        $this->config->set('Filter.YouTube', true);
 
         /* use the custom FlashObject Filter to instead of the SafeObject Inector */
+        $this->config->set('Linkify.Hostlist',array('http://*.taobao.com'));
         $this->config->set('Filter.Custom',array(new HTMLPurifier_Filter_Linkify(),new HTMLPurifier_Filter_FlashObject()));
 
         /* use custom Whitelist URIFilter to Filter the unsafe URL */
@@ -130,7 +131,7 @@ class HTMLPurifierTest extends HTMLPurifier_Harness
         $hm->manager->addModule(new HTMLPurifier_HTMLModule_SafeFlashObject());
 
 
-        $content = "<a><span>http://www.taobao2.com</span></a>";
+        $content = "<span>http://www.taobao.com</span>";
 
         $after = $this->purifier->purify($content,$this->config);
 

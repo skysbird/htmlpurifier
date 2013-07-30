@@ -446,6 +446,11 @@
    <line>277</line>
   </file>
  </directive>
+ <directive id="Linkify.Hostlist">
+  <file name="HTMLPurifier/Filter/Linkify.php">
+   <line>26</line>
+  </file>
+ </directive>
  <directive id="HTML.SafeIframe">
   <file name="HTMLPurifier/HTMLModule/Iframe.php">
    <line>17</line>

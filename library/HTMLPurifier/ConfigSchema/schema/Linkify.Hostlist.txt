@@ -1,0 +1,8 @@
+Linkify.Hostlist
+TYPE: list
+VERSION: 1.3.0
+DEFAULT: array()
+--DESCRIPTION--
+List of strings that will auto transform to a link with 
+so <tt>http://www.taobao.com</tt> will transform to  <tt><a href="http://www.taobao.com">http://www.taobao.com</a></tt>.
+--# vim: et sw=4 sts=4
