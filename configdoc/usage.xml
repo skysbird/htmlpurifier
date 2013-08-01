@@ -448,7 +448,7 @@
  </directive>
  <directive id="Linkify.Hostlist">
   <file name="HTMLPurifier/Filter/Linkify.php">
-   <line>26</line>
+   <line>36</line>
   </file>
  </directive>
  <directive id="HTML.SafeIframe">

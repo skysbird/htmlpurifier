@@ -153,6 +153,7 @@ class HTMLPurifierTest extends HTMLPurifier_Harness
         $this->config->set('Cache.DefinitionImpl',NULL);
         $this->config->set('URI.HostWhitelist',array('*.taobao.com','*.daily.taobaocdn.net'));
         $this->config->set('URI.FlashHostWhitelist',array('www.b.com','www.a.com','www.x.com','*.ku6.com'));
+        $this->config->set('Linkify.Hostlist',array('http://wanke.etao.com'));
 //        $this->config->set('Filter.YouTube', true);
 
         /* use the custom FlashObject Filter to instead of the SafeObject Inector */
